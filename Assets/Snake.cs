@@ -1,10 +1,15 @@
 using UnityEngine;
+using System.Collections.Generic;
 
-public class Movement : MonoBehaviour
+public class Snake: MonoBehaviour
 {
+    private GameHandler gameHandler;
     private Vector2Int gridPosition;
     private Vector2Int direction;
     private float gridMoveTimer;
+
+    private int snakeBodySize;
+    private List<Vector2Int> snakeMovePositionList;
 
     [SerializeField]
     private float gridMoveMaxTimer = 1f;
@@ -14,12 +19,19 @@ public class Movement : MonoBehaviour
     private bool turnUp;
     private bool turnDown;
 
+    public List<Vector2Int> GetGridPositionList() {
+        return snakeMovePositionList;
+    }
 
     void Awake()
     {
         gridPosition = new Vector2Int(0, 0);
         direction = new Vector2Int(1, 0);
+        snakeMovePositionList = new List<Vector2Int>();
         gridMoveTimer = gridMoveMaxTimer;
+        gameHandler = gameObject.GetComponentInParent<GameHandler>();
+
+        snakeBodySize = 1;
     }
 
     void Update()
@@ -78,8 +90,15 @@ public class Movement : MonoBehaviour
             gridPosition += direction;
             gridMoveTimer -= gridMoveMaxTimer;
 
+            snakeMovePositionList.Insert(0, gridPosition);
+            if(snakeMovePositionList.Count >= snakeBodySize+1) {
+                snakeMovePositionList.RemoveAt(snakeMovePositionList.Count-1);
+            }
+
             transform.position = new Vector3(gridPosition.x, gridPosition.y);
             transform.eulerAngles = new Vector3(0, 0, GetAngleFromVector(direction) - 90);
+
+            gameHandler.SnakeMoved(gridPosition);
         }
     }
 
