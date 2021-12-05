@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-public class Snake: MonoBehaviour
+public class Snake : MonoBehaviour
 {
     private GameHandler gameHandler;
     private Vector2Int gridPosition;
@@ -12,14 +12,15 @@ public class Snake: MonoBehaviour
     private List<Vector2Int> snakeMovePositionList;
 
     [SerializeField]
-    private float gridMoveMaxTimer = 1f;
+    private float gridMoveMaxTimer = 0.5f;
 
     private bool turnRight;
     private bool turnLeft;
     private bool turnUp;
     private bool turnDown;
 
-    public List<Vector2Int> GetGridPositionList() {
+    public List<Vector2Int> GetGridPositionList()
+    {
         return snakeMovePositionList;
     }
 
@@ -31,7 +32,7 @@ public class Snake: MonoBehaviour
         gridMoveTimer = gridMoveMaxTimer;
         gameHandler = gameObject.GetComponentInParent<GameHandler>();
 
-        snakeBodySize = 1;
+        snakeBodySize = 0;
     }
 
     void Update()
@@ -83,22 +84,37 @@ public class Snake: MonoBehaviour
         }
     }
 
-    private void Move() {
+    private void Move()
+    {
         gridMoveTimer += Time.deltaTime;
         if (gridMoveTimer >= gridMoveMaxTimer)
         {
-            gridPosition += direction;
             gridMoveTimer -= gridMoveMaxTimer;
 
             snakeMovePositionList.Insert(0, gridPosition);
-            if(snakeMovePositionList.Count >= snakeBodySize+1) {
-                snakeMovePositionList.RemoveAt(snakeMovePositionList.Count-1);
+
+            gridPosition += direction;
+
+            if (gameHandler.TrySnakeEatFood(gridPosition))
+            {
+                snakeBodySize++;
+            }
+
+            if (snakeMovePositionList.Count >= snakeBodySize + 1)
+            {
+                snakeMovePositionList.RemoveAt(snakeMovePositionList.Count - 1);
+            }
+
+            foreach (Vector2Int position in snakeMovePositionList)
+            {
+                GameObject snakeBody = new GameObject();
+                SnakeBody snakeBodyHandler = snakeBody.AddComponent<SnakeBody>();
+                snakeBodyHandler.Create(position);
+                Destroy(snakeBody, gridMoveMaxTimer);
             }
 
             transform.position = new Vector3(gridPosition.x, gridPosition.y);
             transform.eulerAngles = new Vector3(0, 0, GetAngleFromVector(direction) - 90);
-
-            gameHandler.SnakeMoved(gridPosition);
         }
     }
 

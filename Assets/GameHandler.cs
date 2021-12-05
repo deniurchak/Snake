@@ -26,10 +26,12 @@ public class GameHandler : MonoBehaviour
         } while(snake.GetGridPositionList().IndexOf(foodPosition) != -1);
     }
 
-    public void SnakeMoved(Vector2Int snakePosition) {
-        if(snakePosition == foodPosition) {
+    public bool TrySnakeEatFood(Vector2Int snakePosition) {
+        bool snakeAteFood = snakePosition == foodPosition;
+        if(snakeAteFood) {
             CreateFoodPosition();
             food.Respawn(foodPosition);
         }
+        return snakeAteFood;
     }
 }
