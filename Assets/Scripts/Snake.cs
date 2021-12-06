@@ -69,14 +69,15 @@ public class Snake : MonoBehaviour
             {
                 snakeMovePositionList.RemoveAt(snakeMovePositionList.Count - 1);
             }
+            Vector3 rotation = new Vector3(0, 0, GetAngleFromVector(direction) - 90);
 
             foreach (Vector2Int position in snakeMovePositionList)
             {
-                snakeBody.Create(position);
+                snakeBody.Create(position, rotation);
             }
 
             transform.position = new Vector3(gridPosition.x, gridPosition.y);
-            transform.eulerAngles = new Vector3(0, 0, GetAngleFromVector(direction) - 90);
+            transform.eulerAngles = rotation;
         }
     }
 
@@ -118,7 +119,6 @@ public class Snake : MonoBehaviour
             }
         }
     }
-
 
     private float GetAngleFromVector(Vector2Int dir)
     {

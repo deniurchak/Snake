@@ -335,7 +335,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 123f15ff5aecc49ed8905da0ee64d3af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gridMoveMaxTimer: 0.5
+  gridMoveMaxTimer: 0.25
 --- !u!1 &1515772442
 GameObject:
   m_ObjectHideFlags: 0
