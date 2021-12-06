@@ -1,6 +1,13 @@
 using UnityEngine;
-public class SnakeBody : MonoBehaviour
+using System.Collections.Generic;
+
+public class SnakeBody 
 {
+
+    public SnakeBody(float timerToDestroy) {
+        this.timerToDestroy = timerToDestroy;
+    }
+
     [SerializeField]
     private Texture2D tex;
     [SerializeField]
@@ -8,25 +15,22 @@ public class SnakeBody : MonoBehaviour
     [SerializeField]
     private SpriteRenderer sr;
 
-
     [SerializeField]
     private Color color = Color.white;
 
+    private float timerToDestroy;
+    private List<GameObject> snakeBodyParts; 
+
     public void Create(Vector2Int position)
     {
-        transform.position = new Vector3(position.x, position.y);
-    }
+        GameObject snakeBodyPart = new GameObject();
+        snakeBodyPart.transform.position = new Vector3(position.x, position.y);
 
-    void Awake()
-    {
-        sr = gameObject.AddComponent<SpriteRenderer>() as SpriteRenderer;
+        sr = snakeBodyPart.AddComponent<SpriteRenderer>() as SpriteRenderer;
         sr.color = color;
-    }
-
-    void Start()
-    {
         tex = new Texture2D(100, 100);
         sr.sprite = sprite ? sprite : Sprite.Create(tex, new Rect(0.0f, 0.0f, tex.width, tex.height),
         new Vector2(0.5f, 0.5f), 100.0f);
+        Object.Destroy(snakeBodyPart, this.timerToDestroy);
     }
 }

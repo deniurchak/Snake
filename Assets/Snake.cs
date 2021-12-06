@@ -4,6 +4,7 @@ using System.Collections.Generic;
 public class Snake : MonoBehaviour
 {
     private GameHandler gameHandler;
+    private SnakeBody snakeBody;
     private Vector2Int gridPosition;
     private Vector2Int direction;
     private float gridMoveTimer;
@@ -31,7 +32,7 @@ public class Snake : MonoBehaviour
         snakeMovePositionList = new List<Vector2Int>();
         gridMoveTimer = gridMoveMaxTimer;
         gameHandler = gameObject.GetComponentInParent<GameHandler>();
-
+        snakeBody = new SnakeBody(gridMoveMaxTimer);
         snakeBodySize = 0;
     }
 
@@ -45,6 +46,37 @@ public class Snake : MonoBehaviour
         Turn();
         Move();
     }
+    private void Move()
+    {
+        gridMoveTimer += Time.deltaTime;
+        if (gridMoveTimer >= gridMoveMaxTimer)
+        {
+            gridMoveTimer -= gridMoveMaxTimer;
+
+            snakeMovePositionList.Insert(0, gridPosition);
+
+            gridPosition += direction;
+
+            if (gameHandler.TrySnakeEatFood(gridPosition))
+            {
+                snakeBodySize++;
+            }
+
+            if (snakeMovePositionList.Count >= snakeBodySize + 1)
+            {
+                snakeMovePositionList.RemoveAt(snakeMovePositionList.Count - 1);
+            }
+
+            foreach (Vector2Int position in snakeMovePositionList)
+            {
+                snakeBody.Create(position);
+            }
+
+            transform.position = new Vector3(gridPosition.x, gridPosition.y);
+            transform.eulerAngles = new Vector3(0, 0, GetAngleFromVector(direction) - 90);
+        }
+    }
+
     private void GetInput()
     {
         turnRight = Input.GetKey(KeyCode.D);
@@ -84,39 +116,6 @@ public class Snake : MonoBehaviour
         }
     }
 
-    private void Move()
-    {
-        gridMoveTimer += Time.deltaTime;
-        if (gridMoveTimer >= gridMoveMaxTimer)
-        {
-            gridMoveTimer -= gridMoveMaxTimer;
-
-            snakeMovePositionList.Insert(0, gridPosition);
-
-            gridPosition += direction;
-
-            if (gameHandler.TrySnakeEatFood(gridPosition))
-            {
-                snakeBodySize++;
-            }
-
-            if (snakeMovePositionList.Count >= snakeBodySize + 1)
-            {
-                snakeMovePositionList.RemoveAt(snakeMovePositionList.Count - 1);
-            }
-
-            foreach (Vector2Int position in snakeMovePositionList)
-            {
-                GameObject snakeBody = new GameObject();
-                SnakeBody snakeBodyHandler = snakeBody.AddComponent<SnakeBody>();
-                snakeBodyHandler.Create(position);
-                Destroy(snakeBody, gridMoveMaxTimer);
-            }
-
-            transform.position = new Vector3(gridPosition.x, gridPosition.y);
-            transform.eulerAngles = new Vector3(0, 0, GetAngleFromVector(direction) - 90);
-        }
-    }
 
     private float GetAngleFromVector(Vector2Int dir)
     {
