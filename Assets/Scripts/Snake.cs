@@ -27,6 +27,9 @@ public class Snake : MonoBehaviour
 
     void Awake()
     {
+        SpriteRenderer sr= gameObject.AddComponent<SpriteRenderer>();
+        sr.sprite = GameAssets.i.snakeHeadSprite;
+
         gridPosition = new Vector2Int(0, 0);
         direction = new Vector2Int(1, 0);
         snakeMovePositionList = new List<Vector2Int>();

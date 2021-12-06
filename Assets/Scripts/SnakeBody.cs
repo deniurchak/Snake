@@ -11,7 +11,7 @@ public class SnakeBody
     [SerializeField]
     private Texture2D tex;
     [SerializeField]
-    private Sprite sprite;
+    private Sprite sprite = GameAssets.i.snakeBodySprite;
     [SerializeField]
     private SpriteRenderer sr;
 
