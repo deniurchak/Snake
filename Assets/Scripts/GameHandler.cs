@@ -23,12 +23,14 @@ public class GameHandler : MonoBehaviour
         {
             foodPosition = new Vector2Int(Random.Range(-levelGrid.width, levelGrid.width),
             Random.Range(-levelGrid.height, levelGrid.height));
-        } while(snake.GetGridPositionList().IndexOf(foodPosition) != -1);
+        } while (snake.GetGridPositionList().IndexOf(foodPosition) != -1);
     }
 
-    public bool TrySnakeEatFood(Vector2Int snakePosition) {
+    public bool TrySnakeEatFood(Vector2Int snakePosition)
+    {
         bool snakeAteFood = snakePosition == foodPosition;
-        if(snakeAteFood) {
+        if (snakeAteFood)
+        {
             CreateFoodPosition();
             food.Respawn(foodPosition);
         }

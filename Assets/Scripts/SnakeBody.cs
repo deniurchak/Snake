@@ -1,22 +1,20 @@
 using UnityEngine;
 
-public class SnakeBody 
+public class SnakeBodyPart 
 {
-
-    public SnakeBody(float timerToDestroy) {
-        this.timerToDestroy = timerToDestroy;
-    }
-    private float timerToDestroy;
-
-    public void Create(Vector2Int position, Vector3 angles)
+    private Vector2Int gridPosition;
+    private Transform transform;
+    public SnakeBodyPart(int bodyIndex)
     {
         GameObject snakeBodyPart = new GameObject();
-        snakeBodyPart.transform.position = new Vector3(position.x, position.y);
-        snakeBodyPart.transform.eulerAngles = angles;
-
         SpriteRenderer sr = snakeBodyPart.AddComponent<SpriteRenderer>();
         sr.sprite = GameAssets.i.snakeBodySprite;
+        sr.sortingOrder = -bodyIndex;
+        transform = snakeBodyPart.transform;
+    }
 
-        Object.Destroy(snakeBodyPart, this.timerToDestroy);
+    public void SetGridPosition(Vector2Int position) {
+        this.gridPosition = position;
+        transform.position = new Vector3(gridPosition.x, gridPosition.y);
     }
 }
