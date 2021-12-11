@@ -1,17 +1,22 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-//TODO: remove the logic that creates and destroys body parts indefinitely, make them move instead
 public class Snake : MonoBehaviour
 {
+    public enum Direction {
+        Left,
+        Right,
+        Up,
+        Down
+    }
     private GameHandler gameHandler;
     private SnakeBodyPart snakeBody;
     private Vector2Int gridPosition;
-    private Vector2Int direction;
+    public Direction direction;
     private float gridMoveTimer;
 
     private int snakeBodySize;
-    private List<Vector2Int> snakeMovePositionList;
+    private List<SnakeMovePosition> snakeMovePositionList;
     private List<SnakeBodyPart> snakeBodyPartList;
 
     [SerializeField]
@@ -24,7 +29,11 @@ public class Snake : MonoBehaviour
 
     public List<Vector2Int> GetGridPositionList()
     {
-        return snakeMovePositionList;
+        List<Vector2Int> gridPositionList = new List<Vector2Int>() { gridPosition };
+        foreach (SnakeMovePosition snakeMovePosition in snakeMovePositionList) {
+            gridPositionList.Add(snakeMovePosition.GetGridPosition());
+        }
+        return gridPositionList;
     }
 
     void Awake()
@@ -33,8 +42,8 @@ public class Snake : MonoBehaviour
         sr.sprite = GameAssets.i.snakeHeadSprite;
 
         gridPosition = new Vector2Int(0, 0);
-        direction = new Vector2Int(1, 0);
-        snakeMovePositionList = new List<Vector2Int>();
+        direction = Direction.Right; 
+        snakeMovePositionList = new List<SnakeMovePosition>();
         snakeBodyPartList = new List<SnakeBodyPart>();
         gridMoveTimer = gridMoveMaxTimer;
         gameHandler = gameObject.GetComponentInParent<GameHandler>();
@@ -57,10 +66,23 @@ public class Snake : MonoBehaviour
         if (gridMoveTimer >= gridMoveMaxTimer)
         {
             gridMoveTimer -= gridMoveMaxTimer;
+            
+            SnakeMovePosition previousPosition = null;
+            if(snakeMovePositionList.Count >0 ) {
+                previousPosition = snakeMovePositionList[0];
+            }
+            SnakeMovePosition snakeMovePosition = new SnakeMovePosition(gridPosition, previousPosition, direction);
+            snakeMovePositionList.Insert(0, snakeMovePosition);
 
-            snakeMovePositionList.Insert(0, gridPosition);
-
-            gridPosition += direction;
+            Vector2Int gridMoveDirectionVector;
+            switch(direction) {
+                default:
+                case Direction.Right: gridMoveDirectionVector = Vector2Int.right; break;
+                case Direction.Left: gridMoveDirectionVector = Vector2Int.left; break;
+                case Direction.Up: gridMoveDirectionVector = Vector2Int.up; break;
+                case Direction.Down: gridMoveDirectionVector = Vector2Int.down; break;
+            }
+            gridPosition += gridMoveDirectionVector;
 
             if (gameHandler.TrySnakeEatFood(gridPosition))
             {
@@ -73,7 +95,7 @@ public class Snake : MonoBehaviour
                 snakeMovePositionList.RemoveAt(snakeMovePositionList.Count - 1);
             }
 
-            Vector3 rotation = new Vector3(0, 0, GetAngleFromVector(direction) - 90);
+            Vector3 rotation = new Vector3(0, 0, GetAngleFromVector(gridMoveDirectionVector) - 90);
 
             transform.position = new Vector3(gridPosition.x, gridPosition.y);
             transform.eulerAngles = rotation;
@@ -86,7 +108,7 @@ public class Snake : MonoBehaviour
     {
         for (int i = 0; i < snakeBodyPartList.Count; i++)
         {
-            snakeBodyPartList[i].SetGridPosition(snakeMovePositionList[i]);
+            snakeBodyPartList[i].SetSnakeMovePosition(snakeMovePositionList[i]);
         }
     }
 
@@ -105,30 +127,30 @@ public class Snake : MonoBehaviour
     {
         if (turnUp)
         {
-            if (direction != Vector2Int.down)
+            if (direction != Direction.Down)
             {
-                direction = Vector2Int.up;
+                direction = Direction.Up;
             }
         }
         if (turnDown)
         {
-            if (direction != Vector2Int.up)
+            if (direction != Direction.Up)
             {
-                direction = Vector2Int.down;
+                direction = Direction.Down;
             }
         }
         if (turnRight)
         {
-            if (direction != Vector2Int.left)
+            if (direction != Direction.Left)
             {
-                direction = Vector2Int.right;
+                direction = Direction.Right;
             }
         }
         if (turnLeft)
         {
-            if (direction != Vector2Int.right)
+            if (direction != Direction.Right)
             {
-                direction = Vector2Int.left;
+                direction = Direction.Left;
             }
         }
     }
