@@ -12,7 +12,6 @@ public class GameHandler : MonoBehaviour
 
         snake = GetComponentInChildren<Snake>();
         food = GetComponentInChildren<Food>();
-
         CreateFoodPosition();
         food.Respawn(foodPosition);
     }
@@ -21,8 +20,8 @@ public class GameHandler : MonoBehaviour
     {
         do
         {
-            foodPosition = new Vector2Int(Random.Range(-levelGrid.width, levelGrid.width),
-            Random.Range(-levelGrid.height, levelGrid.height));
+            foodPosition = new Vector2Int(Random.Range(-levelGrid.width+1, levelGrid.width-1),
+            Random.Range(-levelGrid.height+1, levelGrid.height-1));
         } while (snake.GetGridPositionList().IndexOf(foodPosition) != -1);
     }
 
@@ -35,5 +34,21 @@ public class GameHandler : MonoBehaviour
             food.Respawn(foodPosition);
         }
         return snakeAteFood;
+    }
+
+    public Vector2Int ValidateGridPosition(Vector2Int gridPosition) {
+        if(gridPosition.x < -levelGrid.width+1) {
+            gridPosition.x = levelGrid.width-1;
+        }
+        if(gridPosition.x > levelGrid.width-1) {
+            gridPosition.x = -levelGrid.width+1;
+        }
+        if(gridPosition.y > levelGrid.height-1) {
+            gridPosition.y = -levelGrid.height+1;
+        }
+        if(gridPosition.y < -levelGrid.height+1) {
+            gridPosition.y = levelGrid.height-1;
+        }
+        return gridPosition;
     }
 }
