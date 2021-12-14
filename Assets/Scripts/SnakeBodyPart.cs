@@ -6,7 +6,7 @@ public class SnakeBodyPart
     private Transform transform;
     public SnakeBodyPart(int bodyIndex)
     {
-        GameObject snakeBodyPart = new GameObject();
+        GameObject snakeBodyPart = new GameObject("SnakeBodyPart");
         SpriteRenderer sr = snakeBodyPart.AddComponent<SpriteRenderer>();
         sr.sprite = GameAssets.i.snakeBodySprite;
         sr.sortingOrder = -bodyIndex;
