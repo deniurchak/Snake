@@ -65,7 +65,7 @@ public class Snake : MonoBehaviour
             Move();
         }
         if(state == State.Dead) {
-            Loader.Load(Loader.Scene.GameScene);
+            GameOver.ShowStatic();
         }
     }
     public List<Vector2Int> GetGridPositionList()
