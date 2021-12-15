@@ -64,6 +64,9 @@ public class Snake : MonoBehaviour
             Turn();
             Move();
         }
+        if(state == State.Dead) {
+            Loader.Load(Loader.Scene.GameScene);
+        }
     }
     public List<Vector2Int> GetGridPositionList()
     {
