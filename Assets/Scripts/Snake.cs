@@ -10,6 +10,9 @@ public class Snake : MonoBehaviour
         Down
     }
 
+    private Direction newDirection;
+    private bool moved;
+
     private enum State {
         Alive,
         Dead
@@ -81,6 +84,7 @@ public class Snake : MonoBehaviour
         gridMoveTimer += Time.deltaTime;
         if (gridMoveTimer >= gridMoveMaxTimer)
         {
+            moved = false;
             gridMoveTimer -= gridMoveMaxTimer;
             
             SnakeMovePosition previousPosition = null;
@@ -126,7 +130,7 @@ public class Snake : MonoBehaviour
                     state = State.Dead;
                 }
             }
-
+            moved = true;
         }
     }
 
@@ -150,34 +154,39 @@ public class Snake : MonoBehaviour
         turnDown = Input.GetKey(KeyCode.S);
     }
     private void Turn()
-    {
+    {   if(!moved) {
+        return;
+    }
         if (turnUp)
         {
             if (direction != Direction.Down)
             {
-                direction = Direction.Up;
+                newDirection= Direction.Up;
             }
         }
         if (turnDown)
         {
             if (direction != Direction.Up)
             {
-                direction = Direction.Down;
+                newDirection= Direction.Down;
             }
         }
         if (turnRight)
         {
             if (direction != Direction.Left)
             {
-                direction = Direction.Right;
+                newDirection= Direction.Right;
             }
         }
         if (turnLeft)
         {
             if (direction != Direction.Right)
             {
-                direction = Direction.Left;
+                newDirection= Direction.Left;
             }
+        }
+        if(moved) {
+            direction = newDirection;
         }
     }
 
