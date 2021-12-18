@@ -3,22 +3,22 @@ using System.Collections.Generic;
 
 public class Snake : MonoBehaviour
 {
-    public enum Direction {
+    public enum Direction
+    {
         Left,
         Right,
         Up,
         Down
     }
-
-    private Direction newDirection;
     private bool moved;
 
-    private enum State {
+    private enum State
+    {
         Alive,
         Dead
     }
 
-    private State state ;
+    private State state;
     private GameHandler gameHandler;
     private SnakeBodyPart snakeBody;
     private Vector2Int gridPosition;
@@ -32,17 +32,21 @@ public class Snake : MonoBehaviour
     [SerializeField]
     private float gridMoveMaxTimer = 0.5f;
 
-    private bool turnRight;
-    private bool turnLeft;
-    private bool turnUp;
-    private bool turnDown;
-
+    private enum InputDirection
+    {
+        Right,
+        Left,
+        Down,
+        Up
+    };
+    private InputDirection inputDirection;
 
     void Awake()
     {
         state = State.Alive;
+        inputDirection = InputDirection.Right;
         gridPosition = new Vector2Int(0, 0);
-        direction = Direction.Right; 
+        direction = Direction.Right;
         snakeMovePositionList = new List<SnakeMovePosition>();
         snakeBodyPartList = new List<SnakeBodyPart>();
         gridMoveTimer = gridMoveMaxTimer;
@@ -50,7 +54,8 @@ public class Snake : MonoBehaviour
         snakeBodySize = 0;
     }
 
-    void Start() {
+    void Start()
+    {
 
         SpriteRenderer sr = gameObject.AddComponent<SpriteRenderer>();
         sr.sprite = GameAssets.i.snakeHeadSprite;
@@ -63,39 +68,44 @@ public class Snake : MonoBehaviour
 
     void FixedUpdate()
     {
-        if(state != State.Dead) {
-            Turn();
-            Move();
+        if (state != State.Dead)
+        {
+            Direction direction = Turn();
+            Move(direction);
         }
-        if(state == State.Dead) {
+        if (state == State.Dead)
+        {
             GameOver.ShowStatic();
         }
     }
     public List<Vector2Int> GetGridPositionList()
     {
         List<Vector2Int> gridPositionList = new List<Vector2Int>() { gridPosition };
-        foreach (SnakeMovePosition snakeMovePosition in snakeMovePositionList) {
+        foreach (SnakeMovePosition snakeMovePosition in snakeMovePositionList)
+        {
             gridPositionList.Add(snakeMovePosition.GetGridPosition());
         }
         return gridPositionList;
     }
-    private void Move()
+    private void Move(Direction newDirection)
     {
         gridMoveTimer += Time.deltaTime;
         if (gridMoveTimer >= gridMoveMaxTimer)
         {
-            moved = false;
+            direction = newDirection;
             gridMoveTimer -= gridMoveMaxTimer;
-            
+
             SnakeMovePosition previousPosition = null;
-            if(snakeMovePositionList.Count >0 ) {
+            if (snakeMovePositionList.Count > 0)
+            {
                 previousPosition = snakeMovePositionList[0];
             }
             SnakeMovePosition snakeMovePosition = new SnakeMovePosition(gridPosition, previousPosition, direction);
             snakeMovePositionList.Insert(0, snakeMovePosition);
 
             Vector2Int gridMoveDirectionVector;
-            switch(direction) {
+            switch (direction)
+            {
                 default:
                 case Direction.Right: gridMoveDirectionVector = Vector2Int.right; break;
                 case Direction.Left: gridMoveDirectionVector = Vector2Int.left; break;
@@ -124,13 +134,14 @@ public class Snake : MonoBehaviour
 
             UpdateSnakeBodyParts();
 
-            foreach(SnakeBodyPart snakeBodyPart in snakeBodyPartList) {
+            foreach (SnakeBodyPart snakeBodyPart in snakeBodyPartList)
+            {
                 Vector2Int snakeBodyPartPosition = snakeBodyPart.GetPosition();
-                if(gridPosition == snakeBodyPartPosition) {
+                if (gridPosition == snakeBodyPartPosition)
+                {
                     state = State.Dead;
                 }
             }
-            moved = true;
         }
     }
 
@@ -148,46 +159,59 @@ public class Snake : MonoBehaviour
     }
     private void GetInput()
     {
-        turnRight = Input.GetKey(KeyCode.D);
-        turnLeft = Input.GetKey(KeyCode.A);
-        turnUp = Input.GetKey(KeyCode.W);
-        turnDown = Input.GetKey(KeyCode.S);
+        if (Input.GetKey(KeyCode.D))
+        {
+            inputDirection = InputDirection.Right;
+        }
+        if (Input.GetKey(KeyCode.A))
+        {
+            inputDirection = InputDirection.Left;
+        }
+        if (Input.GetKey(KeyCode.S))
+        {
+            inputDirection = InputDirection.Down;
+        }
+        if (Input.GetKey(KeyCode.W))
+        {
+            inputDirection = InputDirection.Up;
+        }
     }
-    private void Turn()
-    {   if(!moved) {
-        return;
-    }
-        if (turnUp)
+    private Direction Turn()
+    {
+        Direction newDirection;
+        if (inputDirection == InputDirection.Up)
         {
             if (direction != Direction.Down)
             {
-                newDirection= Direction.Up;
+                newDirection = Direction.Up;
+                return newDirection;
             }
         }
-        if (turnDown)
+        if (inputDirection == InputDirection.Down)
         {
             if (direction != Direction.Up)
             {
-                newDirection= Direction.Down;
+                newDirection = Direction.Down;
+                return newDirection;
             }
         }
-        if (turnRight)
+        if (inputDirection == InputDirection.Right)
         {
             if (direction != Direction.Left)
             {
-                newDirection= Direction.Right;
+                newDirection = Direction.Right;
+                return newDirection;
             }
         }
-        if (turnLeft)
+        if (inputDirection == InputDirection.Left)
         {
             if (direction != Direction.Right)
             {
-                newDirection= Direction.Left;
+                newDirection = Direction.Left;
+                return newDirection;
             }
         }
-        if(moved) {
-            direction = newDirection;
-        }
+        return direction;
     }
 
     private float GetAngleFromVector(Vector2Int dir)
