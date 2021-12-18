@@ -22,7 +22,7 @@ public class Snake : MonoBehaviour
     private GameHandler gameHandler;
     private SnakeBodyPart snakeBody;
     private Vector2Int gridPosition;
-    public Direction direction;
+    public Direction currentDirection;
     private float gridMoveTimer;
 
     private int snakeBodySize;
@@ -46,7 +46,7 @@ public class Snake : MonoBehaviour
         state = State.Alive;
         inputDirection = InputDirection.Right;
         gridPosition = new Vector2Int(0, 0);
-        direction = Direction.Right;
+        currentDirection = Direction.Right;
         snakeMovePositionList = new List<SnakeMovePosition>();
         snakeBodyPartList = new List<SnakeBodyPart>();
         gridMoveTimer = gridMoveMaxTimer;
@@ -92,7 +92,7 @@ public class Snake : MonoBehaviour
         gridMoveTimer += Time.deltaTime;
         if (gridMoveTimer >= gridMoveMaxTimer)
         {
-            direction = newDirection;
+            currentDirection = newDirection;
             gridMoveTimer -= gridMoveMaxTimer;
 
             SnakeMovePosition previousPosition = null;
@@ -100,11 +100,11 @@ public class Snake : MonoBehaviour
             {
                 previousPosition = snakeMovePositionList[0];
             }
-            SnakeMovePosition snakeMovePosition = new SnakeMovePosition(gridPosition, previousPosition, direction);
+            SnakeMovePosition snakeMovePosition = new SnakeMovePosition(gridPosition, previousPosition, currentDirection);
             snakeMovePositionList.Insert(0, snakeMovePosition);
 
             Vector2Int gridMoveDirectionVector;
-            switch (direction)
+            switch (currentDirection)
             {
                 default:
                 case Direction.Right: gridMoveDirectionVector = Vector2Int.right; break;
@@ -181,7 +181,7 @@ public class Snake : MonoBehaviour
         Direction newDirection;
         if (inputDirection == InputDirection.Up)
         {
-            if (direction != Direction.Down)
+            if (currentDirection != Direction.Down)
             {
                 newDirection = Direction.Up;
                 return newDirection;
@@ -189,7 +189,7 @@ public class Snake : MonoBehaviour
         }
         if (inputDirection == InputDirection.Down)
         {
-            if (direction != Direction.Up)
+            if (currentDirection != Direction.Up)
             {
                 newDirection = Direction.Down;
                 return newDirection;
@@ -197,7 +197,7 @@ public class Snake : MonoBehaviour
         }
         if (inputDirection == InputDirection.Right)
         {
-            if (direction != Direction.Left)
+            if (currentDirection != Direction.Left)
             {
                 newDirection = Direction.Right;
                 return newDirection;
@@ -205,13 +205,13 @@ public class Snake : MonoBehaviour
         }
         if (inputDirection == InputDirection.Left)
         {
-            if (direction != Direction.Right)
+            if (currentDirection != Direction.Right)
             {
                 newDirection = Direction.Left;
                 return newDirection;
             }
         }
-        return direction;
+        return currentDirection;
     }
 
     private float GetAngleFromVector(Vector2Int dir)
